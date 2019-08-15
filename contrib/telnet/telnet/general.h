@@ -26,19 +26,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)types.h	8.1 (Berkeley) 6/6/93
+ *	@(#)general.h	8.1 (Berkeley) 6/6/93
  */
 
-typedef struct {
-    char *modedescriptions;
-    char modetype;
-} Modelist;
+/*
+ * Some general definitions.
+ */
 
-extern Modelist modelist[];
 
-struct termspeeds {
-    int speed;
-    int value;
-};
+#define	numberof(x)	(sizeof x/sizeof x[0])
+#define	highestof(x)	(numberof(x)-1)
 
-extern struct termspeeds termspeeds[];
+#define	ClearElement(x)		memset((char *)&x, 0, sizeof x)
+#define	ClearArray(x)		memset((char *)x, 0, sizeof x)

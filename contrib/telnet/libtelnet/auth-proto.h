@@ -26,7 +26,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)encrypt.h	8.1 (Berkeley) 6/4/93
+ *	@(#)auth-proto.h	8.1 (Berkeley) 6/4/93
  * $FreeBSD$
  */
 
@@ -37,7 +37,7 @@
  * to require a specific license from the United States Government.
  * It is the responsibility of any person or organization contemplating
  * export to obtain such a license before exporting.
- *
+ * 
  * WITHIN THAT CONSTRAINT, permission to use, copy, modify, and
  * distribute this software and its documentation for any purpose and
  * without fee is hereby granted, provided that the above copyright
@@ -50,53 +50,58 @@
  * or implied warranty.
  */
 
-#ifdef	ENCRYPTION
-# ifndef __ENCRYPTION__
-# define __ENCRYPTION__
+#ifdef	AUTHENTICATION
 
-#define	DIR_DECRYPT		1
-#define	DIR_ENCRYPT		2
+Authenticator *findauthenticator(int, int);
 
-#include <openssl/des.h>
-typedef	unsigned char Block[8];
-typedef unsigned char *BlockT;
-#if 0
-typedef struct { Block __; } Schedule[16];
-#else
-#define Schedule DES_key_schedule
+void auth_init(const char *, int);
+int auth_cmd(int, char **);
+void auth_request(void);
+void auth_send(unsigned char *, int);
+void auth_send_retry(void);
+void auth_is(unsigned char *, int);
+void auth_reply(unsigned char *, int);
+void auth_finished(Authenticator *, int);
+int auth_wait(char *);
+void auth_disable_name(char *);
+void auth_gen_printsub(unsigned char *, int, unsigned char *, int);
+void auth_name(unsigned char *, int);
+void auth_printsub(unsigned char *, int, unsigned char *, int);
+int auth_sendname(unsigned char *, int);
+void auth_encrypt_user(char *);
+int auth_disable(char *);
+int auth_enable(char *);
+int auth_togdebug(int);
+int auth_status(void);
+
+int getauthmask(char *, int *);
+
+#ifdef	KRB4
+int kerberos4_init(Authenticator *, int);
+int kerberos4_send(Authenticator *);
+void kerberos4_is(Authenticator *, unsigned char *, int);
+void kerberos4_reply(Authenticator *, unsigned char *, int);
+int kerberos4_status(Authenticator *, char *, int);
+void kerberos4_printsub(unsigned char *, int, unsigned char *, int);
 #endif
 
-#define	VALIDKEY(key)	( key[0] | key[1] | key[2] | key[3] | \
-			  key[4] | key[5] | key[6] | key[7])
+#ifdef	KRB5
+int kerberos5_init(Authenticator *, int);
+int kerberos5_send_mutual(Authenticator *);
+int kerberos5_send_oneway(Authenticator *);
+void kerberos5_is(Authenticator *, unsigned char *, int);
+void kerberos5_reply(Authenticator *, unsigned char *, int);
+int kerberos5_status(Authenticator *, char *, int level);
+void kerberos5_printsub(unsigned char *, int, unsigned char *, int);
+#endif
 
-#define	SAMEKEY(k1, k2)	(!bcmp((void *)k1, (void *)k2, sizeof(Block)))
+#ifdef SRA
+int sra_init(Authenticator *, int);
+int sra_send(Authenticator *);
+void sra_is(Authenticator *, unsigned char *, int);
+void sra_reply(Authenticator *, unsigned char *, int);
+int sra_status(Authenticator *, char *, int);
+void sra_printsub(unsigned char *, int, unsigned char *, int);
+#endif
 
-typedef	struct {
-	short		type;
-	int		length;
-	unsigned char	*data;
-} Session_Key;
-
-typedef struct {
-	const char *name;
-	int	type;
-	void	(*output)(unsigned char *, int);
-	int	(*input)(int);
-	void	(*init)(int);
-	int	(*start)(int, int);
-	int	(*is)(unsigned char *, int);
-	int	(*reply)(unsigned char *, int);
-	void	(*session)(Session_Key *, int);
-	int	(*keyid)(int, unsigned char *, int *);
-	void	(*printsub)(unsigned char *, int, unsigned char *, int);
-} Encryptions;
-
-#define	SK_DES		1	/* Matched Kerberos v5 KEYTYPE_DES */
-
-#include "enc-proto.h"
-
-extern int encrypt_debug_mode;
-extern int (*decrypt_input)(int);
-extern void (*encrypt_output)(unsigned char *, int);
-# endif /* __ENCRYPTION__ */
-#endif /* ENCRYPTION */
+#endif

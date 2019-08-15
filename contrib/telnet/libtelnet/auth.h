@@ -26,7 +26,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)encrypt.h	8.1 (Berkeley) 6/4/93
+ *	@(#)auth.h	8.1 (Berkeley) 6/4/93
  * $FreeBSD$
  */
 
@@ -50,53 +50,27 @@
  * or implied warranty.
  */
 
-#ifdef	ENCRYPTION
-# ifndef __ENCRYPTION__
-# define __ENCRYPTION__
+#ifndef	__AUTH__
+#define	__AUTH__
 
-#define	DIR_DECRYPT		1
-#define	DIR_ENCRYPT		2
+#define	AUTH_REJECT	0	/* Rejected */
+#define	AUTH_UNKNOWN	1	/* We don't know who he is, but he's okay */
+#define	AUTH_OTHER	2	/* We know him, but not his name */
+#define	AUTH_USER	3	/* We know he name */
+#define	AUTH_VALID	4	/* We know him, and he needs no password */
 
-#include <openssl/des.h>
-typedef	unsigned char Block[8];
-typedef unsigned char *BlockT;
-#if 0
-typedef struct { Block __; } Schedule[16];
-#else
-#define Schedule DES_key_schedule
-#endif
-
-#define	VALIDKEY(key)	( key[0] | key[1] | key[2] | key[3] | \
-			  key[4] | key[5] | key[6] | key[7])
-
-#define	SAMEKEY(k1, k2)	(!bcmp((void *)k1, (void *)k2, sizeof(Block)))
-
-typedef	struct {
-	short		type;
-	int		length;
-	unsigned char	*data;
-} Session_Key;
-
-typedef struct {
-	const char *name;
+typedef struct XauthP {
 	int	type;
-	void	(*output)(unsigned char *, int);
-	int	(*input)(int);
-	void	(*init)(int);
-	int	(*start)(int, int);
-	int	(*is)(unsigned char *, int);
-	int	(*reply)(unsigned char *, int);
-	void	(*session)(Session_Key *, int);
-	int	(*keyid)(int, unsigned char *, int *);
+	int	way;
+	int	(*init)(struct XauthP *, int);
+	int	(*send)(struct XauthP *);
+	void	(*is)(struct XauthP *, unsigned char *, int);
+	void	(*reply)(struct XauthP *, unsigned char *, int);
+	int	(*status)(struct XauthP *, char *, int);
 	void	(*printsub)(unsigned char *, int, unsigned char *, int);
-} Encryptions;
+} Authenticator;
 
-#define	SK_DES		1	/* Matched Kerberos v5 KEYTYPE_DES */
+#include "auth-proto.h"
 
-#include "enc-proto.h"
-
-extern int encrypt_debug_mode;
-extern int (*decrypt_input)(int);
-extern void (*encrypt_output)(unsigned char *, int);
-# endif /* __ENCRYPTION__ */
-#endif /* ENCRYPTION */
+extern int auth_debug_mode;
+#endif

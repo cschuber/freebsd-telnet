@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 1988, 1993
+/*-
+ * Copyright (c) 1991, 1993
  *	The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,19 +26,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)types.h	8.1 (Berkeley) 6/6/93
+ *	@(#)misc.h	8.1 (Berkeley) 6/4/93
  */
 
-typedef struct {
-    char *modedescriptions;
-    char modetype;
-} Modelist;
+extern char *UserNameRequested;
+extern char *LocalHostName;
+extern char *RemoteHostName;
+extern int ConnectedCount;
+extern int ReservedPort;
 
-extern Modelist modelist[];
-
-struct termspeeds {
-    int speed;
-    int value;
-};
-
-extern struct termspeeds termspeeds[];
+#include "misc-proto.h"

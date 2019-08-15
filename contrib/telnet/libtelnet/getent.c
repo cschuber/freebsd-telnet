@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 1988, 1993
+/*-
+ * Copyright (c) 1991, 1993
  *	The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,20 +25,48 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- *	@(#)types.h	8.1 (Berkeley) 6/6/93
  */
 
-typedef struct {
-    char *modedescriptions;
-    char modetype;
-} Modelist;
+#include <sys/cdefs.h>
 
-extern Modelist modelist[];
+__FBSDID("$FreeBSD$");
 
-struct termspeeds {
-    int speed;
-    int value;
-};
+#ifndef lint
+#if 0
+static char sccsid[] = "@(#)getent.c	8.2 (Berkeley) 12/15/93";
+#endif
+#endif /* not lint */
 
-extern struct termspeeds termspeeds[];
+#include <stdlib.h>
+#include <string.h>
+
+#include "misc-proto.h"
+
+static char *area;
+static char gettytab[] = "/etc/gettytab";
+
+/*ARGSUSED*/
+int
+getent(char *cp __unused, const char *name)
+{
+	int retval;
+	char *tempnam, *dba[2] = { gettytab, NULL };
+
+	tempnam = strdup(name);
+	retval =  cgetent(&area, dba, tempnam) == 0 ? 1 : 0;
+	free(tempnam);
+	return(retval);
+}
+
+/*ARGSUSED*/
+char *
+Getstr(const char *id, char **cpp __unused)
+{
+	int retval;
+	char *answer, *tempid;
+
+	tempid = strdup(id);
+	retval = cgetstr(area, tempid, &answer);
+	free(tempid);
+	return((retval > 0) ? answer : NULL);
+}

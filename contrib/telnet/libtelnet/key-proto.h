@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 1988, 1993
+/*-
+ * Copyright (c) 1991, 1993
  *	The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,19 +26,36 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)types.h	8.1 (Berkeley) 6/6/93
+ *	@(#)key-proto.h	8.1 (Berkeley) 6/4/93
  */
 
-typedef struct {
-    char *modedescriptions;
-    char modetype;
-} Modelist;
+/*
+ * Copyright (C) 1990 by the Massachusetts Institute of Technology
+ *
+ * Export of this software from the United States of America is assumed
+ * to require a specific license from the United States Government.
+ * It is the responsibility of any person or organization contemplating
+ * export to obtain such a license before exporting.
+ *
+ * WITHIN THAT CONSTRAINT, permission to use, copy, modify, and
+ * distribute this software and its documentation for any purpose and
+ * without fee is hereby granted, provided that the above copyright
+ * notice appear in all copies and that both that copyright notice and
+ * this permission notice appear in supporting documentation, and that
+ * the name of M.I.T. not be used in advertising or publicity pertaining
+ * to distribution of the software without specific, written prior
+ * permission.  M.I.T. makes no representations about the suitability of
+ * this software for any purpose.  It is provided "as is" without express
+ * or implied warranty.
+ *
+ * $FreeBSD$
+ */
 
-extern Modelist modelist[];
+#ifndef	__KEY_PROTO__
+#define	__KEY_PROTO__
 
-struct termspeeds {
-    int speed;
-    int value;
-};
-
-extern struct termspeeds termspeeds[];
+int key_file_exists(void);
+void key_lookup(unsigned char *, Block);
+void key_stream_init(Block, Block, int);
+unsigned char key_stream(int, int);
+#endif

@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 1988, 1993
+/*-
+ * Copyright (c) 1991, 1993
  *	The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,20 +25,81 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- *	@(#)types.h	8.1 (Berkeley) 6/6/93
  */
 
-typedef struct {
-    char *modedescriptions;
-    char modetype;
-} Modelist;
+#include <sys/cdefs.h>
 
-extern Modelist modelist[];
+__FBSDID("$FreeBSD$");
 
-struct termspeeds {
-    int speed;
-    int value;
-};
+#ifndef lint
+#if 0
+static const char sccsid[] = "@(#)misc.c	8.1 (Berkeley) 6/4/93";
+#endif
+#endif /* not lint */
 
-extern struct termspeeds termspeeds[];
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "misc.h"
+#ifdef	AUTHENTICATION
+#include "auth.h"
+#endif
+#ifdef	ENCRYPTION
+#include "encrypt.h"
+#endif	/* ENCRYPTION */
+
+char *RemoteHostName;
+char *LocalHostName;
+char *UserNameRequested = 0;
+int ConnectedCount = 0;
+
+#ifndef AUTHENTICATION
+#define undef1 __unused
+#else
+#define undef1
+#endif
+
+void
+auth_encrypt_init(char *local, char *remote, const char *name undef1, int server undef1)
+{
+	RemoteHostName = remote;
+	LocalHostName = local;
+#ifdef	AUTHENTICATION
+	auth_init(name, server);
+#endif
+#ifdef	ENCRYPTION
+	encrypt_init(name, server);
+#endif	/* ENCRYPTION */
+	if (UserNameRequested) {
+		free(UserNameRequested);
+		UserNameRequested = 0;
+	}
+}
+
+#ifdef	ENCRYPTION
+void
+auth_encrypt_user(char *name)
+{
+	if (UserNameRequested)
+		free(UserNameRequested);
+	UserNameRequested = name ? strdup(name) : 0;
+}
+
+/* ARGSUSED */
+void
+auth_encrypt_connect(int cnt __unused)
+{
+}
+#endif	/* ENCRYPTION */
+
+void
+printd(const unsigned char *data, int cnt)
+{
+	if (cnt > 16)
+		cnt = 16;
+	while (cnt-- > 0) {
+		printf(" %02x", *data);
+		++data;
+	}
+}

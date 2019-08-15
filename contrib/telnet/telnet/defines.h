@@ -26,19 +26,27 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)types.h	8.1 (Berkeley) 6/6/93
+ *	@(#)defines.h	8.1 (Berkeley) 6/6/93
+ * $FreeBSD$
  */
 
-typedef struct {
-    char *modedescriptions;
-    char modetype;
-} Modelist;
+#define	settimer(x)	clocks.x = clocks.system++
 
-extern Modelist modelist[];
+#define	NETADD(c)	{ *netoring.supply = c; ring_supplied(&netoring, 1); }
+#define	NET2ADD(c1,c2)	{ NETADD(c1); NETADD(c2); }
+#define	NETBYTES()	(ring_full_count(&netoring))
+#define	NETROOM()	(ring_empty_count(&netoring))
 
-struct termspeeds {
-    int speed;
-    int value;
-};
+#define	TTYADD(c)	if (!(SYNCHing||flushout)) { \
+				*ttyoring.supply = c; \
+				ring_supplied(&ttyoring, 1); \
+			}
+#define	TTYBYTES()	(ring_full_count(&ttyoring))
+#define	TTYROOM()	(ring_empty_count(&ttyoring))
 
-extern struct termspeeds termspeeds[];
+/*	Various modes */
+#define	MODE_LOCAL_CHARS(m)	((m)&(MODE_EDIT|MODE_TRAPSIG))
+#define	MODE_LOCAL_ECHO(m)	((m)&MODE_ECHO)
+#define	MODE_COMMAND_LINE(m)	((m)==-1)
+
+#define	CONTROL(x)	((x)&0x1f)		/* CTRL(x) is not portable */

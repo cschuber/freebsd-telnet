@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1988, 1993
+ * Copyright (c) 1989, 1993
  *	The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,20 +25,24 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- *	@(#)types.h	8.1 (Berkeley) 6/6/93
  */
 
-typedef struct {
-    char *modedescriptions;
-    char modetype;
-} Modelist;
+#if 0
+#ifndef lint
+static const char sccsid[] = "@(#)global.c	8.1 (Berkeley) 6/4/93";
+#endif /* not lint */
+#endif
+#include <sys/cdefs.h>
+__FBSDID("$FreeBSD$");
 
-extern Modelist modelist[];
+/*
+ * Allocate global variables.  We do this
+ * by including the header file that defines
+ * them all as externs, but first we define
+ * the keyword "extern" to be nothing, so that
+ * we will actually allocate the space.
+ */
 
-struct termspeeds {
-    int speed;
-    int value;
-};
-
-extern struct termspeeds termspeeds[];
+#include "defs.h"
+#define extern
+#include "ext.h"

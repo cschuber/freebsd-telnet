@@ -26,19 +26,20 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)types.h	8.1 (Berkeley) 6/6/93
+ *	@(#)fdset.h	8.1 (Berkeley) 6/6/93
  */
 
-typedef struct {
-    char *modedescriptions;
-    char modetype;
-} Modelist;
+/*
+ * The following is defined just in case someone should want to run
+ * this telnet on a 4.2 system.
+ *
+ */
 
-extern Modelist modelist[];
+#ifndef	FD_SETSIZE
 
-struct termspeeds {
-    int speed;
-    int value;
-};
+#define	FD_SET(n, p)	((p)->fds_bits[0] |= (1<<(n)))
+#define	FD_CLR(n, p)	((p)->fds_bits[0] &= ~(1<<(n)))
+#define	FD_ISSET(n, p)	((p)->fds_bits[0] & (1<<(n)))
+#define FD_ZERO(p)	((p)->fds_bits[0] = 0)
 
-extern struct termspeeds termspeeds[];
+#endif

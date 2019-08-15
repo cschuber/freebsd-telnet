@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1988, 1993
+ * Copyright (c) 1989, 1993
  *	The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,19 +26,27 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)types.h	8.1 (Berkeley) 6/6/93
+ *	@(#)pathnames.h	8.1 (Berkeley) 6/4/93
+ * $FreeBSD$
  */
 
-typedef struct {
-    char *modedescriptions;
-    char modetype;
-} Modelist;
+#if BSD > 43
 
-extern Modelist modelist[];
+# include <paths.h>
 
-struct termspeeds {
-    int speed;
-    int value;
-};
+# ifndef _PATH_LOGIN
+#  define	_PATH_LOGIN	"/usr/bin/login"
+# endif
 
-extern struct termspeeds termspeeds[];
+#else
+
+# define	_PATH_TTY	"/dev/tty"
+# ifndef _PATH_LOGIN
+#  define	_PATH_LOGIN	"/bin/login"
+# endif
+
+#endif
+
+#ifdef BFTPDAEMON
+#define		BFTPPATH	"/usr/ucb/bftp"
+#endif  /* BFTPDAEMON */

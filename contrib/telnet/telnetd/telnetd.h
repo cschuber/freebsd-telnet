@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1988, 1993
+ * Copyright (c) 1989, 1993
  *	The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,19 +26,20 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	@(#)types.h	8.1 (Berkeley) 6/6/93
+ *	@(#)telnetd.h	8.1 (Berkeley) 6/4/93
+ * $FreeBSD$
  */
 
-typedef struct {
-    char *modedescriptions;
-    char modetype;
-} Modelist;
 
-extern Modelist modelist[];
+#include "defs.h"
+#include "ext.h"
 
-struct termspeeds {
-    int speed;
-    int value;
-};
+#ifdef	DIAGNOSTICS
+#define	DIAG(a,b)	if (diagnostic & (a)) b
+#else
+#define	DIAG(a,b)
+#endif
 
-extern struct termspeeds termspeeds[];
+/* other external variables */
+extern	char **environ;
+extern	const char *altlogin;

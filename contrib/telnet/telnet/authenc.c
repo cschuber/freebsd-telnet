@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 1988, 1993
+/*-
+ * Copyright (c) 1991, 1993
  *	The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,20 +25,83 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- *	@(#)types.h	8.1 (Berkeley) 6/6/93
  */
 
-typedef struct {
-    char *modedescriptions;
-    char modetype;
-} Modelist;
+#if 0
+#ifndef lint
+static const char sccsid[] = "@(#)authenc.c	8.1 (Berkeley) 6/6/93";
+#endif
+#endif
+#include <sys/cdefs.h>
+__FBSDID("$FreeBSD$");
 
-extern Modelist modelist[];
+#ifdef	AUTHENTICATION
+#ifdef	ENCRYPTION
+#include <sys/types.h>
+#include <arpa/telnet.h>
+#include <pwd.h>
+#include <unistd.h>
+#include <libtelnet/encrypt.h>
+#include <libtelnet/misc.h>
 
-struct termspeeds {
-    int speed;
-    int value;
-};
+#include "general.h"
+#include "ring.h"
+#include "externs.h"
+#include "defines.h"
+#include "types.h"
 
-extern struct termspeeds termspeeds[];
+int
+net_write(unsigned char *str, int len)
+{
+	if (NETROOM() > len) {
+		ring_supply_data(&netoring, str, len);
+		if (str[0] == IAC && str[1] == SE)
+			printsub('>', &str[2], len-2);
+		return(len);
+	}
+	return(0);
+}
+
+void
+net_encrypt(void)
+{
+#ifdef	ENCRYPTION
+	if (encrypt_output)
+		ring_encrypt(&netoring, encrypt_output);
+	else
+		ring_clearto(&netoring);
+#endif	/* ENCRYPTION */
+}
+
+int
+telnet_spin(void)
+{
+	return(-1);
+}
+
+char *
+telnet_getenv(char *val)
+{
+	return((char *)env_getvalue((unsigned char *)val));
+}
+
+char *
+telnet_gets(const char *prom, char *result, int length, int echo)
+{
+	extern int globalmode;
+	int om = globalmode;
+	char *res;
+
+	TerminalNewMode(-1);
+	if (echo) {
+		printf("%s", prom);
+		res = fgets(result, length, stdin);
+	} else if ((res = getpass(prom))) {
+		strncpy(result, res, length);
+		res = result;
+	}
+	TerminalNewMode(om);
+	return(res);
+}
+#endif	/* ENCRYPTION */
+#endif	/* AUTHENTICATION */
