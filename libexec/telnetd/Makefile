@@ -5,6 +5,8 @@
 
 .include <src.opts.mk>
 
+OSVERSION!=	/usr/bin/uname -K
+
 TELNETDIR=	${SRCTOP}/contrib/telnet
 .PATH:		${TELNETDIR}/telnetd
 
@@ -27,7 +29,11 @@ CFLAGS+=	-DINET6
 CFLAGS+=	-I${TELNETDIR}
 CFLAGS+=	-I${TELNETDIR}/telnet
 
+.if ${OSVERSION} > 1400034
 LIBADD=		telnet util tinfow
+.else
+LIBADD=		telnet util ncurses
+.endif
 
 .if ${MK_OPENSSL} != "no"
 SRCS+=		authenc.c

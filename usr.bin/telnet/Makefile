@@ -2,6 +2,8 @@
 
 .include <src.opts.mk>
 
+OSVERSION!=	/usr/bin/uname -K
+
 TELNETDIR=	${SRCTOP}/contrib/telnet
 .PATH:		${TELNETDIR}/telnet
 
@@ -19,7 +21,11 @@ CFLAGS+=	-DINET6
 
 WARNS?=		2
 
+.if ${OSVERSION} > 1400034
 LIBADD=		telnet tinfow
+.else
+LIBADD=		telnet ncurses
+.endif
 
 CFLAGS+=	-DIPSEC
 LIBADD+=	ipsec
