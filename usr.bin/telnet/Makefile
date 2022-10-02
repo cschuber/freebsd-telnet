@@ -12,7 +12,7 @@ PROG=		telnet
 SRCS=		commands.c main.c network.c ring.c sys_bsd.c \
 		telnet.c terminal.c utilities.c
 
-CFLAGS+=	-DKLUDGELINEMODE -DUSE_TERMIO -DENV_HACK -DOPIE \
+CFLAGS+=	-DKLUDGELINEMODE -DUSE_TERMIO -DENV_HACK \
 		-I${TELNETDIR} -I${TELNETDIR}/libtelnet/
 
 .if ${MK_INET6_SUPPORT} != "no"

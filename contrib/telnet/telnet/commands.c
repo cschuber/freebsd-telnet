@@ -124,35 +124,6 @@ static int margc;
 static char *margv[20];
 int quiet_mode;
 
-#ifdef OPIE
-#include <sys/wait.h>
-#define PATH_OPIEKEY	"/usr/bin/opiekey"
-static int
-opie_calc(int argc, char *argv[])
-{
-	int status;
-
-	if(argc != 3) {
-		printf("%s sequence challenge\n", argv[0]);
-		return (0);
-	}
-
-	switch(fork()) {
-	case 0:
-		execv(PATH_OPIEKEY, argv);
-		exit (1);
-	case -1:
-		perror("fork");
-		break;
-	default:
-		(void) wait(&status);
-		if (WIFEXITED(status))
-			return (WEXITSTATUS(status));
-	}
-	return (0);
-}
-#endif
-
 static void
 makeargv(void)
 {
@@ -2531,9 +2502,6 @@ static char
 	encrypthelp[] =	"turn on (off) encryption ('encrypt ?' for more)",
 #endif	/* ENCRYPTION */
 	zhelp[] =	"suspend telnet",
-#ifdef OPIE
-	opiehelp[] =    "compute response to OPIE challenge",
-#endif
 	shellhelp[] =	"invoke a subshell",
 	envhelp[] =	"change environment variables ('environ ?' for more)",
 	modestring[] = "try to enter line or character mode ('mode ?' for more)";
@@ -2562,9 +2530,6 @@ static Command cmdtab[] = {
 	{ "!",		shellhelp,	shell,		1 },
 	{ "environ",	envhelp,	env_cmd,	0 },
 	{ "?",		helphelp,	help,		0 },
-#ifdef OPIE
-	{ "opie",       opiehelp,       opie_calc,      0 },
-#endif		
 	{ NULL, NULL, NULL, 0 }
 };
 
