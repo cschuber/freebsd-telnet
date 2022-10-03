@@ -32,7 +32,7 @@ CFLAGS+=	-I${TELNETDIR}/telnet
 .if ${OSVERSION} > 1400034
 LIBADD=		telnet util tinfow
 .else
-LIBADD=		telnet util ncurses
+LIBADD=		telnet util ncursesw
 .endif
 
 .if ${MK_OPENSSL} != "no"
